@@ -291,26 +291,74 @@ class StudentExerciseReports():
             for student in all_students:
                 print(student)
 
-reports = StudentExerciseReports()
-reports.all_students()
 
-list_cohorts = DisplayCohorts()
-list_cohorts.all_cohorts()
 
-list_exercises = AllExercises()
-list_exercises.all_exercises()
+class NewClass():
+    def __init__(self):
+        self.db_path = "C:\\Users\\alexr_ku9a8gr\\Workspace\\python\\StudentExercises\\studentexercises.db"
 
-list_javascript = JSExercises()
-list_javascript.all_js()
+    def newfunc(self):
+        
+        exercises = dict()
 
-list_python = PyExercises()
-list_python.all_py()
+        with sqlite3.connect(self.db_path) as conn:
+            db_cursor = conn.cursor()
 
-list_react = ReactExercises()
-list_react.all_react()
+            db_cursor.execute("""
+                select
+                    e.Id ExerciseId,
+                    e.Name,
+                    s.Id,
+                    s.FirstName,
+                    s.LastName
+                from Exercise e
+                join StudentExercise se on se.ExerciseId = e.Id
+                join Student s on s.Id = se.StudentId
+            """)
 
-list_int = Instructors()
-list_int.all_instructors()
+            dataset = db_cursor.fetchall()
+
+            for row in dataset:
+                exercise_id = row[0]
+                exercise_name = row[1]
+                student_id = row[2]
+                student_name = f'{row[3]} {row[4]}'
+
+                if exercise_name not in exercises:
+                    exercises[exercise_name] = [student_name]
+                else:
+                    exercises[exercise_name].append(student_name)
+
+            for exercise_name, students in exercises.items():
+                print(exercise_name)
+                for student in students:
+                    print(f'\t* {student}')
+
+            # print(exercises) 
+
+athing = NewClass()
+athing.newfunc()
+
+# reports = StudentExerciseReports()
+# reports.all_students()
+
+# list_cohorts = DisplayCohorts()
+# list_cohorts.all_cohorts()
+
+# list_exercises = AllExercises()
+# list_exercises.all_exercises()
+
+# list_javascript = JSExercises()
+# list_javascript.all_js()
+
+# list_python = PyExercises()
+# list_python.all_py()
+
+# list_react = ReactExercises()
+# list_react.all_react()
+
+# list_int = Instructors()
+# list_int.all_instructors()
 
 # student = Student('Bart', 'Simpson', '@bart', 'Cohort 8')
 # print(f'{student.first_name} {student.last_name} is in {student.cohort}')
