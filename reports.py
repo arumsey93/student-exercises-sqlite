@@ -293,6 +293,50 @@ class StudentExerciseReports():
 
 
 
+class StudentsAndExercises():
+    def __init__(self):
+        self.db_path = "C:\\Users\\alexr_ku9a8gr\\Workspace\\python\\StudentExercises\\studentexercises.db"
+
+    def s_a_e(self):
+
+        students = dict()
+
+        with sqlite3.connect(self.db_path) as conn:
+            db_cursor = conn.cursor()
+
+            db_cursor.execute("""
+                select
+                    s.Id StudentId,
+                    s.FirstName,
+                    s.LastName,
+                    e.Id,
+                    e.Name
+                    from Student s
+                    join StudentExercise se on se.StudentId = s.Id
+                    join Exercise e on e.Id = se.ExerciseId
+            """)
+
+            dataset = db_cursor.fetchall()
+
+            for row in dataset:
+                student_id = row[0]
+                student_name = f'{row[1]} {row[2]}'
+                exercise_id = row[3]
+                exercise_name = row[4]
+
+                if student_name not in students:
+                    students[student_name] = [exercise_name]
+                else:
+                    students[student_name].append(exercise_name)
+
+            for student_name, exercises in students.items():
+                print(student_name)
+                for exercise in exercises:
+                    print(f'\t* {exercise}')
+
+
+
+
 class NewClass():
     def __init__(self):
         self.db_path = "C:\\Users\\alexr_ku9a8gr\\Workspace\\python\\StudentExercises\\studentexercises.db"
@@ -336,8 +380,11 @@ class NewClass():
 
             # print(exercises) 
 
-athing = NewClass()
-athing.newfunc()
+# athing = NewClass()
+# athing.newfunc()
+
+studentex = StudentsAndExercises()
+studentex.s_a_e()
 
 # reports = StudentExerciseReports()
 # reports.all_students()
